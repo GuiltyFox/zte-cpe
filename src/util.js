@@ -39,4 +39,11 @@ module.exports = {
         .map(n => `${n}`.padStart(2,'0'))
         .join(separator);
     },
+    parseMessages(messages){
+        return messages.map(msg => {
+            msg.content = this.contentToString(msg.content);
+            msg.date = this.timeToDate(msg.date);
+            return msg;
+        });
+    }
 }

@@ -56,7 +56,9 @@ export = class ZTECPE {
     isLogged():Promise<boolean>
 
     getSMS(page?:number,smsPerPage?:number):Promise<Array<sms>>
+    getSMSUnread(page?:number,smsPerPage?:number):Promise<Array<sms>>
     sendSMS(number:string,content:string):Promise<result>
+    setSMSRead(id:Array<number>|number):Promise<result>
     deleteSMS(id:Array<number>|number):Promise<result>
 
     connect():Promise<result>

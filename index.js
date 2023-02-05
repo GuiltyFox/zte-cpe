@@ -34,7 +34,7 @@ class ZTECPE {
         }).then((response) => {
             return response.data;
         }).catch(e => ({ result: 'failure' }));
-    }
+            }
     goformGet(content = {}){
         const params = Object.assign(
             {
@@ -92,12 +92,25 @@ class ZTECPE {
             }
         )
         .then(res => {
-            if(Array.isArray(res.messages))
-                return res.messages.map(msg => {
-                    msg.content = util.contentToString(msg.content);
-                    msg.date = util.timeToDate(msg.date);
-                    return msg;
-                })
+                if (Array.isArray(res.messages))
+                return util.parseMessages(res.messages);
+            return res;
+        })
+    }
+    getSMSUnread(page = 0, smsPerPage = 500){
+        return this.goformGet(
+            {
+                cmd: 'sms_data_total',
+                page: page,
+                data_per_page: smsPerPage,
+                mem_store: 1,
+                tags: 1,
+                order_by: 'order by id desc',
+            }
+        )
+            .then(res => {
+                if (Array.isArray(res.messages))
+                return util.parseMessages(res.messages);
             return res;
         })
     }
@@ -113,11 +126,20 @@ class ZTECPE {
             }
         )
     }
+    setSMSRead(sms){
+        return this.goformSet(
+            'SET_MSG_READ',
+            {
+                msg_id: Array.isArray(sms) ? `${sms.join(';')};` : sms,
+                tag: 0
+            }
+        )
+    }
     deleteSMS(sms){
         return this.goformSet(
             'DELETE_SMS',
             {
-                msg_id: Array.isArray(sms) ? sms.join(';') : sms,
+                msg_id: Array.isArray(sms) ? `${sms.join(';')};` : sms,
             }
         )
     }
