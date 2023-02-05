@@ -1,5 +1,5 @@
-const fetch = require('node-fetch');
-const url = require('url');
+const axios = require('axios')
+const qs = require('qs');
 
 const util = require('./src/util');
 
@@ -9,51 +9,46 @@ class ZTECPE {
     constructor(hostname = '192.168.1.1'){
         this.address = hostname;
         this.util = util;
+        this.client = axios.create({
+            baseURL: `http://${hostname}/goform/`,
+            insecureHTTPParser: true, // Important for nodejs 12+
+        });
     }
 
     // UTIL
     goformSet(endpoint, content = {}){
-        const options = Object.assign(
+        const data = Object.assign(
             {
                 goformId: endpoint,
                 isTest: false,
             },
             content,
         );
-        const search = new URLSearchParams();
-        for(const option of Object.entries(options)) search.append(option[0], option[1]);
-        return fetch.default(
-            url.format({
-                protocol: 'http',
-                hostname: this.address,
-                pathname: 'goform/goform_set_cmd_process',
-            }),
-            {
-                method: 'POST',
-                body: search,
-            }
-        )
-        .then(r => r.json())
-        .catch(e => ({result: 'failure'}));
+        return this.client({
+            url: "goform_set_cmd_process",
+            method: 'post',
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            data: qs.stringify(data)
+        }).then((response) => {
+            return response.data;
+        }).catch(e => ({ result: 'failure' }));
     }
     goformGet(content = {}){
-        const query = Object.assign(
+        const params = Object.assign(
             {
                 isTest: false,
                 _: new Date().getTime(),
             },
             content,
         );
-        return fetch.default(
-            url.format({
-                protocol: 'http',
-                hostname: this.address,
-                pathname: 'goform/goform_get_cmd_process',
-                query: query,
-            })
-        )
-        .then(r => r.json())
-        .catch(e => ({result: 'failure'}));
+        return this.client({
+            url: "goform_get_cmd_process",
+            params
+        }).then((response) => {
+            return response.data;
+        }).catch(e => ({ result: 'failure' }));
     }
     goformGetMultiData(items){
         return this.goformGet({
