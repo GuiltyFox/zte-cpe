@@ -361,6 +361,22 @@ class ZTECPE {
             }
         )
     }
+
+    // - - MANUAL TIME SUBSECTION
+    setTimeManualNow(){
+        const now = new Date();
+        return this.goformSet(
+            'SNTP',
+            {
+                manualsettime: 'manual',
+                time_year: now.getFullYear(),
+                time_month: now.getMonth() + 1,
+                time_day: now.getDate(),
+                time_hour: now.getHours(),
+                time_minute: now.getMinutes(),
+            }
+        )
+    }
 }
 
 module.exports = ZTECPE;

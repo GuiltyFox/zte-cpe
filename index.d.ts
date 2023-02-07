@@ -84,4 +84,5 @@ export = class ZTECPE {
     deleteURLFilter(id:Array<number>|number):Promise<result>
     enableUPnP(enable:boolean):Promise<result>
     enableDMZ(enable:boolean,ip:string):Promise<result>
+    setTimeManualNow():Promise<result>
 }
